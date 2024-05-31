@@ -35,8 +35,7 @@ def ensure_connected(G):
         for i in range(len(components) - 1):
             u = list(components[i])[0]
             v = list(components[i + 1])[0]
-            G.add_edge(u, v, weight=0)  # Ajouter une arête de poids 0 pour connecter les composantes
-    
+            G.add_edge(u, v, weight=0)
     return G
 
 def solve_cpp(G):
@@ -52,7 +51,7 @@ def solve_cpp(G):
     return path, length
 
 def plot_graph_and_path(G, path, title):
-    pos = {node: (node[1], node[0]) for node in G.nodes()}  # Longitude, Latitude
+    pos = {node: (node[1], node[0]) for node in G.nodes()}
     nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray')
     
     if path:
@@ -60,7 +59,7 @@ def plot_graph_and_path(G, path, title):
         nx.draw_networkx_edges(G, pos, edgelist=edges, edge_color='red', width=2)
         cmap = cm.get_cmap('viridis', len(path))
 
-        label_offset = 0.001  # Adjusted for better spacing
+        label_offset = 0.001
         for i, (u, v) in enumerate(path):
             color = cmap(i)
             mid_x = (pos[u][0] + pos[v][0]) / 2
@@ -70,7 +69,7 @@ def plot_graph_and_path(G, path, title):
             plt.text(mid_x + offset_x, mid_y + offset_y, str(i), fontsize=12, ha='center', va='center', color=color)
         
         start_node = path[0][0]
-        start_offset_x = -0.002  # Adjusted for better spacing
+        start_offset_x = -0.002
         start_offset_y = -0.002
         plt.scatter([pos[start_node][0]], [pos[start_node][1]], c='green', s=200, zorder=5)
         plt.text(pos[start_node][0] + start_offset_x, pos[start_node][1] + start_offset_y, 'Start', fontsize=12, ha='center', color='green')
@@ -79,7 +78,7 @@ def plot_graph_and_path(G, path, title):
     plt.show()
 
 def main():
-    geojson_fp = 'Data/geobase.json'  # Chemin vers votre fichier GeoJSON
+    geojson_fp = 'Data/geobase.json'
     # quartiers_interet = ['Outremont', 'Verdun', 'Anjou', 
     #                      'Rivière-des-Prairies-Pointe-aux-Trembles', 
     #                      'Le Plateau-Mont-Royal']

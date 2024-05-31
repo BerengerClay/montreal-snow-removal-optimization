@@ -6,7 +6,7 @@ from networkx.algorithms.approximation import traveling_salesman_problem, christ
 
 def generate_random_graph(num_points, seed=42):
     np.random.seed(seed)
-    coords = np.random.rand(num_points, 2)  # Génère des points dans le carré [0, 1] x [0, 1]
+    coords = np.random.rand(num_points, 2)
     G = nx.complete_graph(num_points)
     for i in range(num_points):
         for j in range(i + 1, num_points):
