@@ -1,0 +1,20 @@
+Outremont:
+  Nombre de nœuds: 1636
+  Nombre d'arêtes: 1775
+  Ratio arêtes/nœuds: 1.08
+Verdun:
+  Nombre de nœuds: 6222
+  Nombre d'arêtes: 6568
+  Ratio arêtes/nœuds: 1.06
+Anjou:
+  Nombre de nœuds: 6110
+  Nombre d'arêtes: 6522
+  Ratio arêtes/nœuds: 1.07
+Rivière-des-Prairies-Pointe-aux-Trembles:
+  Nombre de nœuds: 13785
+  Nombre d'arêtes: 14943
+  Ratio arêtes/nœuds: 1.08
+Le Plateau-Mont-Royal:
+  Nombre de nœuds: 4042
+  Nombre d'arêtes: 4598
+  Ratio arêtes/nœuds: 1.14

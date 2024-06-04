@@ -17,9 +17,9 @@ def generate_city_graph(grid_size, edge_prob=0.5, extra_edges=5, seed=42):
     for i in range(grid_size):
         for j in range(grid_size):
             if i < grid_size - 1 and np.random.rand() < edge_prob:
-                G.add_edge((i, j), (i + 1, j), weight=np.random.rand())
+                G.add_edge((i, j), (i + 1, j), weight=np.linalg.norm(np.array((i,j)) - np.array((i+1,j))))
             if j < grid_size - 1 and np.random.rand() < edge_prob:
-                G.add_edge((i, j), (i, j + 1), weight=np.random.rand())
+                G.add_edge((i, j), (i, j + 1), weight=np.linalg.norm(np.array((i,j)) - np.array((i,j+1))))
 
     for _ in range(extra_edges):
         u = (np.random.randint(0, grid_size), np.random.randint(0, grid_size))
@@ -75,9 +75,9 @@ def plot_graph_and_path(G, coords, path, title):
     plt.show()
 
 def main():
-    grid_size = 5
-    edge_prob = 0.5
-    extra_edges = 5
+    grid_size = 3
+    edge_prob = 0.6
+    extra_edges = 0#int(1/100 * grid_size ** 2)
     G, coords = generate_city_graph(grid_size, edge_prob, extra_edges)
     
     start_time = timeit.default_timer()
