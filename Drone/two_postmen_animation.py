@@ -34,11 +34,6 @@ def build_graph_from_gdf(gdf):
 
 def ensure_connected(G):
     if not nx.is_connected(G):
-        # components = list(nx.connected_components(G))
-        # for i in range(len(components) - 1):
-        #     u = list(components[i])[0]
-        #     v = list(components[i + 1])[0]
-        #     G.add_edge(u, v, weight=0)
         largest_cc = max(nx.connected_components(G), key=len)
         G_connected = G.subgraph(largest_cc).copy()
         return G_connected
@@ -94,14 +89,10 @@ def plot_graph_and_path(G, path, save_path='one_postman.mp4'):
 
     ani = FuncAnimation(fig, update, frames=len(path), repeat=False)
     ani.save(save_path, writer='ffmpeg', fps=80, dpi=300)
-    #plt.show()
 
 def plot_graph_and_paths(G, path1, path2, save_path='two_postmen.mp4', fps=100, dpi=300):
     pos = {node: (node[1], node[0]) for node in G.nodes()}
     fig, ax = plt.subplots()
-    edge_counts = defaultdict(int)
-    cmap1 = cm.get_cmap('cool', max(len(path1), 10))  # Colormap for postman 1
-    cmap2 = cm.get_cmap('hot', max(len(path2), 10))   # Colormap for postman 2
 
     def update(num):
         ax.clear()
@@ -112,21 +103,6 @@ def plot_graph_and_paths(G, path1, path2, save_path='two_postmen.mp4', fps=100, 
 
         edges2 = [(u, v) for u, v in path2[:num+1]]
         nx.draw_networkx_edges(G, pos, edgelist=edges2, edge_color='blue', width=2, ax=ax)
-
-        # for i in range(num + 1):
-        #     if i < len(path1):
-        #         u1, v1 = path1[i]
-        #         edge_counts[(u1, v1)] += 1
-        #         edge_counts[(v1, u1)] += 1
-        #         color1 = cmap1(edge_counts[(u1, v1)])
-        #         nx.draw_networkx_edges(G, pos, edgelist=[(u1, v1)], edge_color=[color1], width=2, ax=ax)
-                
-        #     if i < len(path2):
-        #         u2, v2 = path2[i]
-        #         edge_counts[(u2, v2)] += 1
-        #         edge_counts[(v2, u2)] += 1
-        #         color2 = cmap2(edge_counts[(u2, v2)])
-        #         nx.draw_networkx_edges(G, pos, edgelist=[(u2, v2)], edge_color=[color2], width=2, ax=ax)
 
         if path1:
             start_node1 = path1[0][0]

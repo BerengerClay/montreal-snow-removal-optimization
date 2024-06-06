@@ -5,8 +5,6 @@ geojson_fp = 'Data/geobase.json'
 
 gdf = gpd.read_file(geojson_fp)
 
-# print(gdf.head())
-
 if gdf.crs is None:
     gdf.set_crs(epsg=4326, inplace=True)
 

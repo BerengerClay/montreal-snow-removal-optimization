@@ -58,23 +58,11 @@ def plot_graph_and_path(G, path, title):
     if path:
         edges = [(u, v) for u, v in path]
         nx.draw_networkx_edges(G, pos, edgelist=edges, edge_color='red', width=2)
-        cmap = cm.get_cmap('viridis', len(path))
 
-        # label_offset = 0.001
-        # for i, (u, v) in enumerate(path):
-        #     color = cmap(i)
-        #     mid_x = (pos[u][0] + pos[v][0]) / 2
-        #     mid_y = (pos[u][1] + pos[v][1]) / 2
-        #     offset_x = (pos[v][1] - pos[u][1]) * label_offset
-        #     offset_y = (pos[u][0] - pos[v][0]) * label_offset
-        #     #plt.text(mid_x + offset_x, mid_y + offset_y, str(i), fontsize=12, ha='center', va='center', color=color)
-        
         start_node = path[0][0]
-        start_offset_x = -0.002
-        start_offset_y = -0.002
+
         plt.scatter([pos[start_node][0]], [pos[start_node][1]], c='green', s=200, zorder=5)
-        #plt.text(pos[start_node][0], pos[start_node][1], 'Start', fontsize=12, ha='center', color='green')
-    
+
     plt.title(title)
     plt.show()
 
