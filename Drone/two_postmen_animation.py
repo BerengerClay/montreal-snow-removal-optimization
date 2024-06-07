@@ -46,11 +46,9 @@ def split_graph(G):
     if not nx.is_eulerian(G):
         G = nx.eulerize(G)
 
-    # Sort nodes by latitude (y-coordinate)
     nodes_sorted_by_lat = sorted(G.nodes(), key=lambda x: x[0])
     mid_index = len(nodes_sorted_by_lat) // 2
 
-    # Split nodes into two groups
     nodes1 = set(nodes_sorted_by_lat[:mid_index+1])
     nodes2 = set(nodes_sorted_by_lat[mid_index-1:])
 

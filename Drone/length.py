@@ -7,7 +7,6 @@ def load_and_prepare_data(geojson_fp, street_name, quartier):
     if gdf.crs is None:
         gdf.set_crs(epsg=4326, inplace=True)
 
-    # Utiliser contains pour s'assurer que tous les segments pertinents sont inclus
     gdf_filtered = gdf[(gdf['NOM_VOIE'].str.contains(street_name, case=False, na=False)) & 
                        ((gdf['ARR_GCH'].str.lower() == quartier.lower()) | 
                         (gdf['ARR_DRT'].str.lower() == quartier.lower()))]

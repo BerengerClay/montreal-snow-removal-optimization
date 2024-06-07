@@ -34,18 +34,15 @@ def plot_graph_with_subgraph(G, subgraph_nodes, title, filename):
     pos = {node: (node[1], node[0]) for node in G.nodes()}
     fig, ax = plt.subplots(figsize=(10, 8))
 
-    # Draw all non-bidirectional edges in gray with arrows
     for u, v, d in G.edges(data=True):
         if d['direction'] != 'two-way':
             nx.draw_networkx_edges(G, pos, edgelist=[(u, v)], edge_color='gray', width=1, ax=ax, arrows=True,
                                    arrowstyle='-|>', arrowsize=10)
 
-    # Draw all bidirectional edges in black without arrows
     for u, v, d in G.edges(data=True):
         if d['direction'] == 'two-way' and (v, u) in G.edges:
             nx.draw_networkx_edges(G, pos, edgelist=[(u, v)], edge_color='gray', width=1, ax=ax, arrows=False)
 
-    # Draw the subgraph in green
     subgraph = G.subgraph(subgraph_nodes)
     for u, v, d in subgraph.edges(data=True):
         if d['direction'] == 'two-way' and (v, u) in subgraph.edges:
@@ -68,10 +65,8 @@ def main():
         gdf_quartier = gdf_filtered[(gdf_filtered['ARR_GCH'] == quartier) | (gdf_filtered['ARR_DRT'] == quartier)]
         G = build_graph_from_gdf(gdf_quartier)
         
-        # Find the largest strongly connected component
         largest_scc = max(nx.strongly_connected_components(G), key=len)
         
-        # Plot the graph with the largest strongly connected component
         plot_graph_with_subgraph(G, largest_scc, f'{quartier} - General and Subgraph', f'{quartier}_graph.png')
 
 if __name__ == "__main__":

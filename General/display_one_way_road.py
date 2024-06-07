@@ -21,16 +21,16 @@ def build_graphs_from_gdf(gdf):
 
     for _, row in gdf.iterrows():
         coords = list(row.geometry.coords)
-        sens_cir = row['SENS_CIR']  # Assuming 'SENS_CIR' is the column indicating one-way or two-way
+        sens_cir = row['SENS_CIR']
         for i in range(len(coords) - 1):
             u = (coords[i][1], coords[i][0])
             v = (coords[i + 1][1], coords[i + 1][0])
             weight = np.linalg.norm(np.array(u) - np.array(v))
-            if sens_cir == 1:  # One-way (positive direction)
+            if sens_cir == 1:
                 G_one_way_positive.add_edge(u, v, weight=weight)
-            elif sens_cir == -1:  # One-way (negative direction)
+            elif sens_cir == -1:
                 G_one_way_negative.add_edge(v, u, weight=weight)
-            else:  # Two-way
+            else:
                 G_two_way.add_edge(u, v, weight=weight)
     
     return G_one_way_positive, G_one_way_negative, G_two_way

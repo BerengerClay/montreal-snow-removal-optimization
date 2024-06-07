@@ -29,7 +29,6 @@ def main():
 
     gdf_filtered = load_and_prepare_data(geojson_fp, quartiers_interet)
     
-    # Calculate the total road length for each quartier
     for quartier in quartiers_interet:
         gdf_quartier = gdf_filtered[(gdf_filtered['ARR_GCH'] == quartier) | (gdf_filtered['ARR_DRT'] == quartier)]
         total_length = calculate_total_road_length(gdf_quartier)

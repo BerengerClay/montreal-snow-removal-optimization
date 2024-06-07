@@ -92,7 +92,6 @@ def main():
 
     start_nodes = list(G.nodes())
     
-    # Ask the user to specify the number of starting nodes
     num_start_nodes = int(input("Enter the number of starting nodes: "))
     step = max(len(start_nodes) // num_start_nodes, 1)
     start_nodes = start_nodes[::step][:num_start_nodes]

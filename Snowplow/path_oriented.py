@@ -46,13 +46,11 @@ def plot_graph_with_subgraph(G, subgraph_nodes, title, filename):
     pos = {node: (node[1], node[0]) for node in G.nodes()}
     fig, ax = plt.subplots(figsize=(10, 8))
 
-    # Draw all non-bidirectional edges in gray with arrows
     for u, v, d in G.edges(data=True):
         if d['direction'] != 'two-way':
             nx.draw_networkx_edges(G, pos, edgelist=[(u, v)], edge_color='gray', width=1, ax=ax, arrows=True,
                                    arrowstyle='-|>', arrowsize=10)
 
-    # Draw all bidirectional edges in black without arrows
     for u, v, d in G.edges(data=True):
         if d['direction'] == 'two-way' and (v, u) in G.edges:
             nx.draw_networkx_edges(G, pos, edgelist=[(u, v)], edge_color='gray', width=1, ax=ax, arrows=False)

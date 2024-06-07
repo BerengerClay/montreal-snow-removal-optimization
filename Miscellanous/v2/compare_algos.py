@@ -105,7 +105,6 @@ def main():
     tsp_exp_future_times = exponential(future_edge_counts.ravel(), *tsp_exp_params)
     christofides_exp_future_times = exponential(future_edge_counts.ravel(), *christofides_exp_params)
 
-    # Determine the best model based on MSE
     tsp_poly_mse = mean_squared_error(tsp_times, tsp_poly_model.predict(tsp_poly_features.transform(edge_counts)))
     tsp_exp_mse = mean_squared_error(tsp_times, exponential(edge_counts.ravel(), *tsp_exp_params))
     

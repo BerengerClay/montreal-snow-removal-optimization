@@ -52,16 +52,14 @@ def add_edges_to_make_eulerian(G, odd_nodes):
 
 def plot_graphs(G_original, G_eulerian, title, filename):
     pos = {node: (node[1], node[0]) for node in G_original.nodes()}
-    pos.update({node: (node[1], node[0]) for node in G_eulerian.nodes()})  # Ensure all nodes are included
+    pos.update({node: (node[1], node[0]) for node in G_eulerian.nodes()})
     fig, ax = plt.subplots(figsize=(10, 8))
 
-    # Plot original graph in light gray
     for u, v, d in G_original.edges(data=True):
         color = 'lightgray'
         arrows = True if d['direction'] != 'two-way' else False
         nx.draw_networkx_edges(G_original, pos, edgelist=[(u, v)], edge_color=color, width=1, ax=ax, arrows=arrows, arrowstyle='-|>', arrowsize=10)
 
-    # Plot eulerian graph in color
     for u, v, d in G_eulerian.edges(data=True):
         if d['direction'] == 'auxiliary':
             color = 'red'
@@ -106,16 +104,12 @@ def main():
     G_principal = build_graph_from_gdf(gdf_filtered[gdf_filtered['ARR_GCH'] == quartier_principal])
     G_voisin = build_graph_from_gdf(gdf_filtered[gdf_filtered['ARR_GCH'] != quartier_principal])
     
-    # Combine the principal and neighboring graphs
     G_combined = nx.compose(G_principal, G_voisin)
     
-    # Find odd degree nodes in the principal graph
     odd_degree_nodes = find_odd_degree_nodes(G_principal)
 
-    # Add edges to make the graph Eulerian
     add_edges_to_make_eulerian(G_combined, odd_degree_nodes)
     
-    # Check if the graph is Eulerian
     is_eulerian = nx.is_eulerian(G_combined)
     print(f"Graph is now Eulerian: {is_eulerian}")
 
@@ -123,13 +117,10 @@ def main():
         print("Graph is not Eulerian even after adding edges. Please check the logic.")
         return
 
-    # Plot the graphs
     plot_graphs(G_principal, G_combined, f'{quartier_principal} - Original and Eulerian Graph', f'{quartier_principal}_graph.png')
 
-    # Find the Chinese Postman Path
     cpp_path = chinese_postman_path(G_combined)
 
-    # Create the animation
     create_animation(G_combined, cpp_path, 'chinese_postman_path.gif')
 
 if __name__ == "__main__":

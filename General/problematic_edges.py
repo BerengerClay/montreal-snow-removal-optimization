@@ -39,17 +39,13 @@ def plot_graph_with_components(G, title, filename):
     pos = {node: (node[1], node[0]) for node in G.nodes()}
     fig, ax = plt.subplots()
 
-    # Find strongly connected components
     scc = list(nx.strongly_connected_components(G))
     
-    # Generate colors
     colors = itertools.cycle(plt.cm.get_cmap('tab20').colors)
     
-    # Track drawn edges and nodes
     drawn_edges = set()
     drawn_nodes = set()
 
-    # Draw components and edges with specific colors
     for component in scc:
         subgraph = G.subgraph(component)
         if len(component) >= 10:
@@ -65,7 +61,6 @@ def plot_graph_with_components(G, title, filename):
             
             drawn_nodes.update(component)
 
-    # Draw missing edges and nodes in red
     all_edges = set(G.edges())
     missing_edges = all_edges - drawn_edges
     nx.draw_networkx_edges(G, pos, edgelist=missing_edges, edge_color='red', width=0.5, ax=ax, arrows=True,
@@ -77,8 +72,8 @@ def plot_graph_with_components(G, title, filename):
     nx.draw_networkx_nodes(G, pos, nodelist=missing_nodes, node_color='red', node_size=0.5, ax=ax)
 
     plt.title(title)
-    plt.savefig(filename, format='png', dpi=300)  # Save the figure as PNG with high resolution
-    plt.close()  # Close the figure to free memory
+    plt.savefig(filename, format='png', dpi=300)
+    plt.close()
 
 def main():
     geojson_fp = 'Data/geobase.json'

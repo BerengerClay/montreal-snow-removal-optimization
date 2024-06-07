@@ -93,19 +93,16 @@ def animate_postman_path(G, path, added_edges, converted_edges, filename):
         ax.clear()
         nx.draw(G, pos, with_labels=False, node_color='lightblue', edge_color='gray', node_size=100, ax=ax)
 
-        # Draw added edges in green
         nx.draw_networkx_edges(G, pos, edgelist=added_edges, edge_color='green', width=2.0, ax=ax)
 
-        # Draw converted edges in blue
         nx.draw_networkx_edges(G, pos, edgelist=converted_edges, edge_color='blue', width=2.0, ax=ax)
 
-        # Draw already visited edges in red
         nx.draw_networkx_edges(G, pos, edgelist=path[:num+1], edge_color='red', width=2.0, ax=ax)
 
         plt.title(f'Step {num+1}')
 
     ani = animation.FuncAnimation(fig, update, frames=len(path), repeat=False)
-    ani.save(filename, writer='ffmpeg', fps=10)
+    ani.save(filename, writer='ffmpeg', fps=2)
 
 def main():
     grid_size = 4  # Taille de la grille

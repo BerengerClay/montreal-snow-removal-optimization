@@ -56,7 +56,6 @@ def add_required_edges_for_scc(G, scc):
     return G
 
 def solve_cpp_directed(G):
-    # Ensure the graph is strongly connected
     if not nx.is_strongly_connected(G):
         components = list(nx.strongly_connected_components(G))
         for i in range(len(components) - 1):
@@ -64,7 +63,6 @@ def solve_cpp_directed(G):
             v = list(components[i + 1])[0]
             G.add_edge(u, v, weight=0)
     
-    # Add required edges within each strongly connected component
     sccs = list(nx.strongly_connected_components(G))
     for scc in sccs:
         G = add_required_edges_for_scc(G, scc)

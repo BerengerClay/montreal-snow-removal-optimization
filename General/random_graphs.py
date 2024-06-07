@@ -49,7 +49,7 @@ def plot_graph(G, coords, ax, title, node_size):
 #         extra_edges = int(1/100 * grid_size ** 2)
 #         G, coords = generate_city_graph(grid_size, edge_prob, extra_edges)
         
-#         node_size = 300 / grid_size  # Ajuster la taille des nœuds en fonction de la taille de la grille
+#         node_size = 300 / grid_size
 #         plot_graph(G, coords, ax, f'Grid Size: {grid_size}', node_size)
 
 #     for j in range(i + 1, 9):
@@ -66,7 +66,7 @@ def plot_graph(G, coords, title, node_size):
     plt.show()
 
 def main():
-    grid_size = 50  # Taille de la grille
+    grid_size = 50
     edge_prob = 0.6
     extra_edges = int(1/100 * grid_size ** 2)
     G, coords = generate_city_graph(grid_size, edge_prob, extra_edges)
