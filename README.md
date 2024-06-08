@@ -1,6 +1,6 @@
 # ERO1
 
-# Instrctions d’installation et d’exécution
+# Instructions d’installation et d’exécution
 
 Installer les modules python necessaires puis lancer les fichiers executables.
 
