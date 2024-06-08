@@ -2,25 +2,20 @@ import geopandas as gpd
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-from matplotlib.animation import FuncAnimation
-import timeit
+import matplotlib.animation as animation
 from geopy.distance import geodesic
+from sklearn.cluster import KMeans
 
 def load_and_prepare_data(geojson_fp, quartiers_interet):
     gdf = gpd.read_file(geojson_fp)
-
     if gdf.crs is None:
         gdf.set_crs(epsg=4326, inplace=True)
-
     gdf_filtered = gdf[(gdf['ARR_GCH'].isin(quartiers_interet)) | 
                        (gdf['ARR_DRT'].isin(quartiers_interet))]
-    
     return gdf_filtered
 
 def build_graph_from_gdf(gdf):
     G = nx.DiGraph()
-
     for _, row in gdf.iterrows():
         coords = list(row.geometry.coords)
         street_name = row['NOM_VOIE'] if row['NOM_VOIE'] else 'Unknown Street'
@@ -30,21 +25,37 @@ def build_graph_from_gdf(gdf):
             weight = geodesic((coords[i][1], coords[i][0]), (coords[i + 1][1], coords[i + 1][0])).meters
             direction = row['SENS_CIR']
             if direction == 1:
-                G.add_edge(u, v, weight=weight, street_name=street_name, direction='one-way')
+                G.add_edge(u, v, weight=weight, direction='one-way', street_name=street_name)
             elif direction == -1:
-                G.add_edge(v, u, weight=weight, street_name=street_name, direction='one-way')
+                G.add_edge(v, u, weight=weight, direction='one-way', street_name=street_name)
             else:
-                G.add_edge(u, v, weight=weight, street_name=street_name, direction='two-way')
-                G.add_edge(v, u, weight=weight, street_name=street_name, direction='two-way')
-    
+                G.add_edge(u, v, weight=weight, direction='two-way', street_name=street_name)
+                G.add_edge(v, u, weight=weight, direction='two-way', street_name=street_name)
     return G
 
-def ensure_connected(G):
-    if not nx.is_strongly_connected(G):
-        largest_scc = max(nx.strongly_connected_components(G), key=len)
-        G_connected = G.subgraph(largest_scc).copy()
-        return G_connected
-    return G
+def generate_clusters(G, num_clusters, seed=0):
+    np.random.seed(seed)
+    pos = np.array([node for node in G.nodes()])
+    kmeans = KMeans(n_clusters=num_clusters, random_state=seed).fit(pos)
+    clusters = kmeans.labels_
+    return clusters
+
+def filter_graph_by_snow_intensity(G, clusters, snow_intensity, threshold):
+    nodes_to_keep = [node for node, cluster in zip(G.nodes(), clusters) if snow_intensity[cluster] > threshold]
+    subgraph = G.subgraph(nodes_to_keep).copy()
+    return subgraph
+
+def plot_graph(G, title, node_size, ax):
+    pos = {node: (node[1], node[0]) for node in G.nodes()}
+
+    # Draw double-sided edges as lines
+    nx.draw_networkx_edges(G, pos, edgelist=[(u, v) for u, v, d in G.edges(data=True) if d['direction'] == 'two-way'], edge_color='black', width=1.0, ax=ax, arrows=False)
+    
+    # Draw one-way edges as arrows
+    nx.draw_networkx_edges(G, pos, edgelist=[(u, v) for u, v, d in G.edges(data=True) if d['direction'] == 'one-way'], edge_color='gray', width=1.0, ax=ax, arrows=True, arrowstyle='-|>', arrowsize=10)
+
+    nx.draw_networkx_nodes(G, pos, node_color='lightblue', node_size=node_size, ax=ax)
+    ax.set_title(title)
 
 def make_eulerian(G):
     G_eulerian = G.copy()
@@ -71,7 +82,7 @@ def make_eulerian(G):
             except nx.NetworkXNoPath:
                 path_exists = False
             
-            if path_exists:
+            if True:#path_exists:
                 if not G_eulerian.has_edge(closest_node, node):
                     G_eulerian.add_edge(closest_node, node, weight=1, direction='auxiliary')
                     added_edges.append((closest_node, node))
@@ -91,87 +102,78 @@ def make_eulerian(G):
 
     return G_eulerian, added_edges, converted_edges
 
-def solve_cpp(G, start_node, output_file='street_lengths.txt'):
-    G = ensure_connected(G)
-    
-    G_eulerian, added_edges, converted_edges = make_eulerian(G)
+def chinese_postman_path(G):
+    if not nx.is_eulerian(G):
+        raise nx.NetworkXError("G is not Eulerian.")
+    return list(nx.eulerian_circuit(G))
 
-    if not nx.is_eulerian(G_eulerian):
-        raise nx.NetworkXError("Graph is not Eulerian after adding edges.")
+def animate_postman_path(G, G_eulerian, path, added_edges, converted_edges, G_full, filename):
+    pos = {node: (node[1], node[0]) for node in G_full.nodes()}
+    fig, ax = plt.subplots(figsize=(8, 8))
 
-    path = list(nx.eulerian_circuit(G_eulerian, source=start_node))
-
-    length = 0
-    with open(output_file, 'w') as f:
-        for u, v in path:
-            edge_data = G_eulerian.get_edge_data(u, v)
-            segment_length = edge_data.get('weight', geodesic(u, v).meters)
-            length += segment_length
-            street_name = edge_data.get('street_name', 'Unknown Street')
-            f.write(f"Segment of {street_name} from {u} to {v}: {segment_length:.2f} meters\n")
-
-    return path, length, G_eulerian, added_edges, converted_edges
-
-def plot_graph_and_path(G, path, total_length, G_eulerian, added_edges, converted_edges, save_path='one_postman_length_diff_start.mp4'):
-    pos = {node: (node[1], node[0]) for node in G.nodes()}
-    fig, ax = plt.subplots()
-
-    distance_covered = 0
+    distances = [G_eulerian[u][v]['weight'] for u, v in path]
+    cumulative_distances = np.cumsum(distances)
 
     def update(num):
-        nonlocal distance_covered
         ax.clear()
-        nx.draw_networkx_nodes(G, pos, node_color='lightblue', node_size=2, ax=ax)
+        # Draw the full graph in light gray
+        nx.draw_networkx_nodes(G_full, pos, node_color='lightgray', node_size=1, ax=ax)
+        nx.draw_networkx_edges(G_full, pos, edge_color='lightgray', width=0.5, ax=ax)
 
-        # Draw original edges
+        # Highlight the edges and nodes of the Eulerian subgraph in the animation
+        nx.draw_networkx_nodes(G, pos, node_color='lightblue', node_size=1, ax=ax)
         nx.draw_networkx_edges(G, pos, edgelist=[(u, v) for u, v, d in G.edges(data=True) if d['direction'] == 'two-way'], edge_color='black', width=1.0, ax=ax, arrows=False)
         nx.draw_networkx_edges(G, pos, edgelist=[(u, v) for u, v, d in G.edges(data=True) if d['direction'] == 'one-way'], edge_color='gray', width=1.0, ax=ax, arrows=True, arrowstyle='-|>', arrowsize=10)
 
         # Draw added edges in green
         nx.draw_networkx_edges(G, pos, edgelist=added_edges, edge_color='green', width=2.0, ax=ax, arrows=True, arrowstyle='-|>', arrowsize=10)
-
+        
         # Draw converted edges in blue
         nx.draw_networkx_edges(G, pos, edgelist=converted_edges, edge_color='blue', width=2.0, ax=ax, arrows=True, arrowstyle='-|>', arrowsize=10)
 
         # Draw path edges in red
-        edges = [(u, v) for u, v in path[:num+1]]
-        nx.draw_networkx_edges(G, pos, edgelist=edges, edge_color='red', width=2, ax=ax)
+        nx.draw_networkx_edges(G, pos, edgelist=path[:num+1], edge_color='red', width=2.0, ax=ax, arrows=True, arrowstyle='-|>', arrowsize=10)
 
-        if num > 0:
-            u, v = path[num-1]
-            distance_covered += G_eulerian[u][v].get('weight', geodesic(u, v).meters)
-        
-        ax.text(0.5, 0.95, f'Distance: {distance_covered:.2f} meters', transform=ax.transAxes, fontsize=12, verticalalignment='top', horizontalalignment='center')
+        current_distance = cumulative_distances[num]
+        plt.title(f'Distance: {current_distance:.2f} meters')
 
-    ani = FuncAnimation(fig, update, frames=len(path), repeat=False)
-    ani.save(save_path, writer='ffmpeg', fps=80, dpi=300)
+    ani = animation.FuncAnimation(fig, update, frames=len(path), repeat=False)
+    ani.save(filename, writer='ffmpeg', fps=80)
 
 def main():
     geojson_fp = 'Data/geobase.json'
     quartiers_interet = ['Outremont']
 
     gdf_filtered = load_and_prepare_data(geojson_fp, quartiers_interet)
-    G = build_graph_from_gdf(gdf_filtered)
+    G_full = build_graph_from_gdf(gdf_filtered)
 
-    start_nodes = list(G.nodes())
-    
-    num_start_nodes = int(input("Enter the number of starting nodes: "))
-    step = max(len(start_nodes) // num_start_nodes, 1)
-    start_nodes = start_nodes[::step][:num_start_nodes]
+    # Apply the clustering and snow intensity logic
+    num_clusters = 10
+    min_snow_intensity = 0
+    max_snow_intensity = 20
+    clusters = generate_clusters(G_full, num_clusters)
+    snow_intensity = np.random.uniform(min_snow_intensity, max_snow_intensity, num_clusters)
+    threshold = 13
 
-    for i, start_node in enumerate(start_nodes):
-        output_file = f'street_lengths_start_{i}.txt'
-        animation_file = f'one_postman_length_start_{i}.mp4'
+    G_filtered = filter_graph_by_snow_intensity(G_full, clusters, snow_intensity, threshold)
 
-        start_time = timeit.default_timer()
-        cpp_path, cpp_length, G_eulerian, added_edges, converted_edges = solve_cpp(G, start_node, output_file=output_file)
-        end_time = timeit.default_timer()
-        cpp_time = end_time - start_time
-        
-        print(f"CPP - Time: {cpp_time:.4f}s, Length: {cpp_length:.2f} meters, Start Node: {start_node}")
-        
-        plot_graph_and_path(G, cpp_path, cpp_length, G_eulerian, added_edges, converted_edges, save_path=animation_file)
-        return
+    # Render the filtered graph eulerian
+    G_eulerian, added_edges, converted_edges = make_eulerian(G_filtered)
+
+    # Find the largest strongly connected component (SCC) in the eulerian graph
+    largest_scc = max(nx.strongly_connected_components(G_eulerian), key=len)
+    G_scc = G_eulerian.subgraph(largest_scc).copy()
+
+    fig, ax = plt.subplots(figsize=(8, 8))
+    plot_graph(G_scc, 'Largest Strongly Connected Component of Filtered and Eulerian Graph', node_size=1, ax=ax)
+    plt.show()
+
+    if nx.is_eulerian(G_scc):
+        print("Graph is now Eulerian: True")
+        path = chinese_postman_path(G_scc)
+        animate_postman_path(G_scc, G_eulerian, path, added_edges, converted_edges, G_full, 'outremont_postman_animation.mp4')
+    else:
+        print("Graph is now Eulerian: False")
 
 if __name__ == "__main__":
     main()
