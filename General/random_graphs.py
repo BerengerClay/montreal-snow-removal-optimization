@@ -40,7 +40,7 @@ def plot_graph(G, coords, ax, title, node_size):
     ax.set_title(title)
 
 # def main():
-#     grid_sizes = range(3, 12)  # Tailles de grille de 3 à 11
+#     grid_sizes = range(3, 12)
 #     fig, axes = plt.subplots(3, 3, figsize=(15, 15))
 
 #     for i, grid_size in enumerate(grid_sizes):

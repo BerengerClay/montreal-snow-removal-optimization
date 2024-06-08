@@ -123,17 +123,13 @@ def plot_graph_and_path(G, path, total_length, G_eulerian, added_edges, converte
         ax.clear()
         nx.draw_networkx_nodes(G, pos, node_color='lightblue', node_size=2, ax=ax)
 
-        # Draw original edges
         nx.draw_networkx_edges(G, pos, edgelist=[(u, v) for u, v, d in G.edges(data=True) if d['direction'] == 'two-way'], edge_color='black', width=1.0, ax=ax, arrows=False)
         nx.draw_networkx_edges(G, pos, edgelist=[(u, v) for u, v, d in G.edges(data=True) if d['direction'] == 'one-way'], edge_color='gray', width=1.0, ax=ax, arrows=True, arrowstyle='-|>', arrowsize=10)
 
-        # Draw added edges in green
         nx.draw_networkx_edges(G, pos, edgelist=added_edges, edge_color='green', width=2.0, ax=ax, arrows=True, arrowstyle='-|>', arrowsize=10)
 
-        # Draw converted edges in blue
         nx.draw_networkx_edges(G, pos, edgelist=converted_edges, edge_color='blue', width=2.0, ax=ax, arrows=True, arrowstyle='-|>', arrowsize=10)
 
-        # Draw path edges in red
         edges = [(u, v) for u, v in path[:num+1]]
         nx.draw_networkx_edges(G, pos, edgelist=edges, edge_color='red', width=2, ax=ax)
 

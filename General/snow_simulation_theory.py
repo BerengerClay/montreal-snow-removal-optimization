@@ -75,14 +75,12 @@ def main():
     one_way_prob = 0.3
     num_clusters = 50
 
-    # Définir les valeurs minimales et maximales de l'intensité de la neige
     min_snow_intensity = 0
     max_snow_intensity = 15
 
     G = generate_city_graph(grid_size, edge_prob, extra_edges, one_way_prob)
     clusters = generate_clusters(G, num_clusters)
     
-    # Générer une intensité de neige pour chaque cluster dans l'intervalle défini
     snow_intensity = np.random.uniform(min_snow_intensity, max_snow_intensity, num_clusters)
 
     fig, ax = plt.subplots(figsize=(8, 8))

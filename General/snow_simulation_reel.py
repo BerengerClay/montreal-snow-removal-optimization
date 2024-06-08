@@ -68,7 +68,6 @@ def main():
     gdf_filtered = load_and_prepare_data(geojson_fp, quartiers_interet)
     G_one_way_positive, G_one_way_negative, G_two_way = build_graphs_from_gdf(gdf_filtered)
     
-    # Convert all graphs to undirected graphs and combine them
     G_one_way_positive_undirected = G_one_way_positive.to_undirected()
     G_one_way_negative_undirected = G_one_way_negative.to_undirected()
     G_combined = nx.compose_all([G_one_way_positive_undirected, G_one_way_negative_undirected, G_two_way])

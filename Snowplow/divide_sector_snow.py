@@ -48,7 +48,6 @@ def plot_graph_with_snow(G, clusters, snow_intensity, min_intensity, max_intensi
     pos = {node: (node[1], node[0]) for node in G.nodes()}
     norm = Normalize(vmin=min_intensity, vmax=max_intensity)
     
-    # Separate nodes and edges based on the snow intensity threshold
     high_intensity_nodes = [node for node, cluster in zip(G.nodes(), clusters) if snow_intensity[cluster] > threshold]
     low_intensity_nodes = [node for node, cluster in zip(G.nodes(), clusters) if snow_intensity[cluster] <= threshold]
     
@@ -78,7 +77,6 @@ def main():
     gdf_filtered = load_and_prepare_data(geojson_fp, quartiers_interet)
     G_one_way_positive, G_one_way_negative, G_two_way = build_graphs_from_gdf(gdf_filtered)
     
-    # Convert all graphs to undirected graphs and combine them
     G_one_way_positive_undirected = G_one_way_positive.to_undirected()
     G_one_way_negative_undirected = G_one_way_negative.to_undirected()
     G_combined = nx.compose_all([G_one_way_positive_undirected, G_one_way_negative_undirected, G_two_way])
@@ -90,7 +88,6 @@ def main():
     clusters = generate_clusters(G_combined, num_clusters)
     snow_intensity = np.random.uniform(min_snow_intensity, max_snow_intensity, num_clusters)
 
-    # Plot the graph with snow intensity, distinguishing between high and low intensities
     threshold = 10
     plot_graph_with_snow(G_combined, clusters, snow_intensity, min_snow_intensity, max_snow_intensity, threshold, 'Outremont Streets with Snow Intensity > 10 cm in Blue, <= 10 cm in Gray')
 

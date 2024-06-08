@@ -1,0 +1,9 @@
+geopandas==0.10.2
+networkx==2.6.3
+numpy==1.21.2
+matplotlib==3.4.3
+geopy==2.2.0
+scikit-learn==0.24.2
+itertools==0.1.1
+imageio==2.9.0
+tqdm==4.62.3

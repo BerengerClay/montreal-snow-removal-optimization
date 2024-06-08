@@ -41,9 +41,19 @@ https://donnees.montreal.ca/dataset/geobase
     Snowplow/cpp_directed_real_animation.py
     ```
 
+2. Exécutez le script pour simuler l'enneigement d'un quartier :
+    ```sh
+    General/snow_simulation_reel.py
+    ```
+
+3. Exécutez le script pour simuler le parcours d'une deneigeuse seulement sur les routes enneigees d'un quartier :
+    ```sh
+    Snowplow/divide_sector_snow.py
+    ```
+
 ### Étape 3 : Analyse Générale
 
-1. D'autres scripts sont fournis car ils nous ont permis de faire des comparaisons de modelisation ou des verifications 
+1. D'autres scripts sont fournis car ils nous ont permis de faire des comparaisons de modelisations ou des verifications 
 
 ## Structure des Dossiers
 

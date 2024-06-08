@@ -45,10 +45,8 @@ def generate_city_graph(grid_size, edge_prob=0.5, extra_edges=5, one_way_prob=0.
 def plot_oriented_graph(G, title, node_size, ax):
     pos = {node: (node[0], node[1]) for node in G.nodes()}
 
-    # Draw double-sided edges as lines
     nx.draw_networkx_edges(G, pos, edgelist=[(u, v) for u, v, d in G.edges(data=True) if d['direction'] == 'two-way'], edge_color='black', width=1.0, ax=ax, arrows=False)
     
-    # Draw one-way edges as arrows
     nx.draw_networkx_edges(G, pos, edgelist=[(u, v) for u, v, d in G.edges(data=True) if d['direction'] == 'one-way'], edge_color='gray', width=1.0, ax=ax, arrows=True, arrowstyle='-|>', arrowsize=10)
 
     nx.draw_networkx_nodes(G, pos, node_color='lightblue', node_size=node_size, ax=ax)

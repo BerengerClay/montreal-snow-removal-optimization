@@ -48,10 +48,8 @@ def filter_graph_by_snow_intensity(G, clusters, snow_intensity, threshold):
 def plot_graph(G, title, node_size, ax):
     pos = {node: (node[1], node[0]) for node in G.nodes()}
 
-    # Draw double-sided edges as lines
     nx.draw_networkx_edges(G, pos, edgelist=[(u, v) for u, v, d in G.edges(data=True) if d['direction'] == 'two-way'], edge_color='black', width=1.0, ax=ax, arrows=False)
     
-    # Draw one-way edges as arrows
     nx.draw_networkx_edges(G, pos, edgelist=[(u, v) for u, v, d in G.edges(data=True) if d['direction'] == 'one-way'], edge_color='gray', width=1.0, ax=ax, arrows=True, arrowstyle='-|>', arrowsize=10)
 
     nx.draw_networkx_nodes(G, pos, node_color='lightblue', node_size=node_size, ax=ax)
@@ -116,22 +114,17 @@ def animate_postman_path(G, G_eulerian, path, added_edges, converted_edges, G_fu
 
     def update(num):
         ax.clear()
-        # Draw the full graph in light gray
         nx.draw_networkx_nodes(G_full, pos, node_color='lightgray', node_size=1, ax=ax)
         nx.draw_networkx_edges(G_full, pos, edge_color='lightgray', width=0.5, ax=ax)
 
-        # Highlight the edges and nodes of the Eulerian subgraph in the animation
         nx.draw_networkx_nodes(G, pos, node_color='lightblue', node_size=1, ax=ax)
         nx.draw_networkx_edges(G, pos, edgelist=[(u, v) for u, v, d in G.edges(data=True) if d['direction'] == 'two-way'], edge_color='black', width=1.0, ax=ax, arrows=False)
         nx.draw_networkx_edges(G, pos, edgelist=[(u, v) for u, v, d in G.edges(data=True) if d['direction'] == 'one-way'], edge_color='gray', width=1.0, ax=ax, arrows=True, arrowstyle='-|>', arrowsize=10)
 
-        # Draw added edges in green
         nx.draw_networkx_edges(G, pos, edgelist=added_edges, edge_color='green', width=2.0, ax=ax, arrows=True, arrowstyle='-|>', arrowsize=10)
         
-        # Draw converted edges in blue
         nx.draw_networkx_edges(G, pos, edgelist=converted_edges, edge_color='blue', width=2.0, ax=ax, arrows=True, arrowstyle='-|>', arrowsize=10)
 
-        # Draw path edges in red
         nx.draw_networkx_edges(G, pos, edgelist=path[:num+1], edge_color='red', width=2.0, ax=ax, arrows=True, arrowstyle='-|>', arrowsize=10)
 
         current_distance = cumulative_distances[num]
@@ -147,7 +140,6 @@ def main():
     gdf_filtered = load_and_prepare_data(geojson_fp, quartiers_interet)
     G_full = build_graph_from_gdf(gdf_filtered)
 
-    # Apply the clustering and snow intensity logic
     num_clusters = 10
     min_snow_intensity = 0
     max_snow_intensity = 20
@@ -157,10 +149,8 @@ def main():
 
     G_filtered = filter_graph_by_snow_intensity(G_full, clusters, snow_intensity, threshold)
 
-    # Render the filtered graph eulerian
     G_eulerian, added_edges, converted_edges = make_eulerian(G_filtered)
 
-    # Find the largest strongly connected component (SCC) in the eulerian graph
     largest_scc = max(nx.strongly_connected_components(G_eulerian), key=len)
     G_scc = G_eulerian.subgraph(largest_scc).copy()
 
