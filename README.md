@@ -1,4 +1,3 @@
-C'est un excellent projet pour mettre en valeur vos compétences en Recherche Opérationnelle et en modélisation.
 # ❄️ Montreal Snow Removal Optimization : Logistique par Drone et Recherche Opérationnelle
 
 ## 📸 Démonstration
