@@ -1,73 +1,86 @@
-# Projet ERO1 : Déneiger Montréal
+C'est un excellent projet pour mettre en valeur vos compétences en Recherche Opérationnelle et en modélisation.
+# ❄️ Montreal Snow Removal Optimization : Logistique par Drone et Recherche Opérationnelle
 
-## Description
+## 📸 Démonstration
 
-Ce projet vise à optimiser les trajets des équipes de déneigement de la ville de Montréal en utilisant des drones pour analyser les niveaux de neige et en planifiant les itinéraires des déneigeuses en fonction des données recueillies. Le projet couvre cinq quartiers de Montréal et utilise des algorithmes avancés pour assurer une couverture efficace et économique des opérations de déneigement.
+![Démonstration de la simulation d'optimisation des trajets de déneigement](Data/demo.gif)
 
-## Sources
+-----
 
-https://donnees.montreal.ca/dataset/geobase
+## 🌟 Présentation du Projet
 
-## Installation
+Ce projet vise à **optimiser les trajets des équipes de déneigement de la ville de Montréal** en se basant sur la **Recherche Opérationnelle** et la simulation.
 
-1. Installez les dépendances requises :
-    ```sh
-    pip install -r requirements.txt
-    ```
+L'objectif principal est de planifier des itinéraires efficaces et économiques en utilisant les données géographiques réelles de Montréal, en respectant les contraintes de circulation, et en modélisant l'état d'enneigement via l'analyse par drones.
 
-## Utilisation
+-----
 
-### Étape 1 : Analyse par Drone
+## ✨ Fonctionnalités et Simulations
 
-1. Exécutez le script pour simuler le parcours d'un drone dans un quartier en precisant les coordonnees de depart (plusieurs animations seront generees - une pour chaque point de depart):
-    ```sh
-    Drone/one_postman_length_start_coordinates.py
-    ```
+Le projet est divisé en plusieurs simulations clés qui modélisent différentes étapes de l'opération de déneigement :
 
-2.  Exécutez le script pour simuler le parcours d'un drone dans un quartier en partant de num_start_nodes differents:
-    ```sh
-    Drone/one_postman_length_diff_start.py
-    ```
+### Étape 1 : Analyse par Drone (Collecte de Données)
 
-3. Exécutez le script pour simuler le parcours de deux drones dans un quartier :
-    ```sh
-    Drone/two_postmen_animation.py
-    ```
+Les scripts simulent la collecte de données sur le terrain, souvent basée sur le **Problème du Facteur Cheval (Chinese Postman Problem)** pour garantir que toutes les routes sont inspectées efficacement.
 
-### Étape 2 : Simulation de Déneigement
+  * `Drone/one_postman_length_start_coordinates.py` : Simule le parcours d'un drone à partir de coordonnées spécifiques (génère plusieurs animations).
+  * `Drone/one_postman_length_diff_start.py` : Simule le parcours d'un drone en variant les points de départ (`num_start_nodes`).
+  * `Drone/two_postmen_animation.py` : Simule l'optimisation des trajets pour une équipe de deux drones (double couverture).
 
-1. Exécutez le script pour simuler le parcours d'une déneigeuse respectant les sens de circulation :
-    ```sh
-    Snowplow/cpp_directed_real_animation.py
-    ```
+### Étape 2 : Simulation de Déneigement (Optimisation)
 
-2. Exécutez le script pour simuler l'enneigement d'un quartier :
-    ```sh
-    General/snow_simulation_reel.py
-    ```
+Ces scripts se concentrent sur la planification et l'optimisation des trajets des déneigeuses, en utilisant les données d'enneigement :
 
-3. Exécutez le script pour simuler le parcours d'une deneigeuse seulement sur les routes enneigees d'un quartier :
-    ```sh
-    Snowplow/divide_sector_snow.py
-    ```
+  * `Snowplow/cpp_directed_real_animation.py` : Simule le parcours d'une déneigeuse en tenant compte des **sens de circulation** réels (modèle dirigé).
+  * `General/snow_simulation_reel.py` : Simule l'état d'**enneigement** dans un quartier.
+  * `Snowplow/divide_sector_snow.py` : Simule le parcours de la déneigeuse uniquement sur les **routes enneigées**, optimisant ainsi les ressources.
 
 ### Étape 3 : Analyse Générale
 
-1. D'autres scripts sont fournis car ils nous ont permis de faire des comparaisons de modelisations ou des verifications 
+Le dossier `Miscellanous` contient des scripts et des analyses qui ont permis de valider les modèles et de comparer différentes approches de modélisation.
 
-## Structure des Dossiers
+-----
 
-- **Data** : Contient les données brutes.
-- **Drone** : Scripts et animations liés à la simulation des drones.
-- **General** : Scripts généraux et images pour les analyses et simulations.
-- **Miscellanous** : Comparaisons et analyses supplémentaires.
-- **Snowplow** : Simulations et animations des déneigeuses.
-- **README.md** : Documentation générale du projet.
+## 🛠️ Installation et Utilisation
 
-## Contributeurs
+### Prérequis
 
-- Baucher Tael
-- Chedal-Anglay Berenger
-- Godin Nathan
-- Hallier Flavien
-- Kanounnikoff Martin
+  * Python 3.x
+  * Les dépendances listées dans le fichier `requirements.txt`.
+  * [Source des données :](https://donnees.montreal.ca/dataset/geobase) Utilisation de la **géobase de Montréal** pour les données cartographiques réelles.
+
+### Installation
+
+Installez les dépendances requises via `pip` :
+
+```bash
+pip install -r requirements.txt
+```
+
+### Utilisation (Exemples)
+
+Pour lancer une simulation de déneigement :
+
+```bash
+# Exemple : Simulation avec respect des sens de circulation
+python Snowplow/cpp_directed_real_animation.py
+```
+
+Pour simuler le parcours d'un drone :
+
+```bash
+# Exemple : Parcours de deux drones
+python Drone/two_postmen_animation.py
+```
+
+-----
+
+## 🤝 Contributeurs
+
+Ce projet a été réalisé en collaboration par :
+
+  * Baucher Tael
+  * Chedal-Anglay Berenger
+  * Godin Nathan
+  * Hallier Flavien
+  * Kanounnikoff Martin
